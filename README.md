@@ -13,35 +13,39 @@ import numpy as np
 from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.cross_validation import train_test_split
 
+
 def import_dataset(filename, all_data):
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with open(filename,'rb') as csvfile:
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;csv_has_header = csv.Sniffer().has_header(csvfile.read(10*1024))
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;csvfile.seek(0)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if csv_has_header:
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;csvfile.next()
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;csvlines = csv.reader(csvfile, delimiter=',', quoting=csv.QUOTE_NONNUMERIC)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dataset=list(csvlines)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for x in range (len(dataset)):
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;all_data.append(dataset[x])
+	with open(filename,'rb') as csvfile:
+    	csv_has_header = csv.Sniffer().has_header(csvfile.read(10*1024))
+		csvfile.seek(0)
+		if csv_has_header:
+			csvfile.next()
+			csvlines = csv.reader(csvfile, delimiter=',', quoting=csv.QUOTE_NONNUMERIC)
+			dataset=list(csvlines)
+			for x in range (len(dataset)):
+				all_data.append(dataset[x])
+
 
 def export_dataset(filename, prediction_result):
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;with open(filename, 'wb') as output:
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mywriter = csv.writer(output, lineterminator='\n')
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for val in prediction_result:
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mywriter.writerow(val)
+	with open(filename, 'wb') as output:
+		mywriter = csv.writer(output, lineterminator='\n')
+		for val in prediction_result:
+			mywriter.writerow(val)
+
 
 def main():
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;all_data = []
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;split = 0.30
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;export_file_predictions = '/home/becky/Documents/OnlineNewsPopularity_predictions.csv'
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;import_dataset('/home/becky/Documents/OnlineNewsPopularity_fixed_nourl.csv', all_data)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dataset = np.array(all_data)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;training_data, test_data = train_test_split(dataset, test_size = split)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;regression_task = ExtraTreesRegressor(n_estimators=15, max_features="auto", max_depth=None, min_samples_split=2)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;regression_task.fit(training_data, training_data[:,59], sample_weight=None)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;predicted_values = regression_task.predict(test_data)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;actual_and_test = np.column_stack([test_data, predicted_values])
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;export_dataset(export_file_predictions, actual_and_test)
+	all_data = []
+	split = 0.30
+	export_file_predictions = '/home/becky/Documents/OnlineNewsPopularity_predictions.csv'
+	import_dataset('/home/becky/Documents/OnlineNewsPopularity_fixed_nourl.csv', all_data)
+	dataset = np.array(all_data)
+	training_data, test_data = train_test_split(dataset, test_size = split)
+	regression_task = ExtraTreesRegressor(n_estimators=15, max_features="auto", max_depth=None, min_samples_split=2)
+	regression_task.fit(training_data, training_data[:,59], sample_weight=None)
+	predicted_values = regression_task.predict(test_data)
+	actual_and_test = np.column_stack([test_data, predicted_values])
+	export_dataset(export_file_predictions, actual_and_test)
+
 
 main()
 
